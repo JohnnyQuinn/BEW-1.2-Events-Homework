@@ -29,9 +29,15 @@ class Guest(db.Model):
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.String(100))
+    date_and_time = db.Column(db.Date)
+    guests = db.relationship('Guest', back_populates='events_attending')
 
 # TODO: Create a table `guest_event_table` with the following columns:
 # - event_id: Integer column (foreign key)
 # - guest_id: Integer column (foreign key)
 
-guest_event_table = None
+guest_event_table = db.Table('guest_event_table',
+    db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
+    db.Column('guest_id', db.Integer, db.ForeignKey('guest.id'))
+)
