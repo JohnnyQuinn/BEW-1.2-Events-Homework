@@ -19,7 +19,8 @@ def index():
     """Show upcoming events to users!"""
     # TODO: Get all events and send to the template
     all_events = Event.query.all()
-    print(all_events)
+    print("--------------------------------------------------")
+    print(f'guest.events_attending: {Guest.events_attending}\n {type(Guest.events_attending)}')
     return render_template('index.html', all_events=all_events)
 
 
@@ -41,17 +42,29 @@ def rsvp(event_id):
     is_returning_guest = request.form.get('returning')
     guest_name = request.form.get('guest_name')
 
+    event = Event.query.filter_by(id=event_id).one()
+
     if is_returning_guest:
         # TODO: Look up the guest by name, and add the event to their 
         # events_attending, then commit to the database
-        pass
+        returning_guest = Guest.query.filter_by(name=guest_name).one()
+        returning_guest.events_attending.append(event)
+        db.session.add(returning_guest)
+        db.session.commit() 
 
     else:
         guest_email = request.form.get('email')
         guest_phone = request.form.get('phone')
         # TODO: Create a new guest with the given name, email, and phone, and 
         # add the event to their events_attending, then commit to the database
-        pass
+        new_guest = Guest(
+            name = guest_name,
+            email = guest_email,
+            phone = guest_phone
+        )
+        new_guest.events_attending.append(event)
+        db.session.add(new_guest)
+        db.session.commit()
     
     flash('You have successfully RSVP\'d! See you there!')
     return redirect(url_for('main.event_detail', event_id=event_id))
@@ -92,4 +105,5 @@ def create():
 @main.route('/guest/<guest_id>')
 def guest_detail(guest_id):
     # TODO: Get the guest with the given id and send to the template
-    return render_template('guest_detail.html')
+    guest = Guest.query.filter_by(id=guest_id).one()
+    return render_template('guest_detail.html', guest=guest)
