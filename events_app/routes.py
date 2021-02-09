@@ -28,6 +28,14 @@ def event_detail(event_id):
     """Show a single event."""
     # TODO: Get the event with the given id and send to the template
     event = Event.query.get(event_id)
+    event_time = {
+        'weekday': (event.date_and_time).strftime("%A"),
+        'month': (event.date_and_time).strftime("%B"),
+        'day': (event.date_and_time).strftime("%d"), 
+        'year': (event.date_and_time).strftime("%Y"),
+        'time': f'{(event.date_and_time).strftime("%I")}:{(event.date_and_time).strftime("%M")} {(event.date_and_time).strftime("%p")}'
+    }
+    print(f'---------------------------------HERE:{print(event)}')
 
     return render_template('event_detail.html', event=event)
 
